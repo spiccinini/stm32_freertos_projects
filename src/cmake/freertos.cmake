@@ -24,6 +24,7 @@ target_include_directories(freertos
         ${FREERTOS_DIR}/include
         ${FREERTOS_DIR}/config
         ${FREERTOS_DIR}/portable/GCC/ARM_CM4F
+        ${APP_DIR} # for app_config.h
 )
 
 # -flto breaks FreeRTOS, so remove it
