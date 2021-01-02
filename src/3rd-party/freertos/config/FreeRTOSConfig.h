@@ -1,16 +1,15 @@
 #ifndef FREERTOS_CONFIG_H
 #define FREERTOS_CONFIG_H
-// https://www.freertos.org/a00110.html
 
-extern const unsigned long system_core_clock_hz;
-extern const unsigned long systick_clock_hz;
+#include <app_config.h>
+// https://www.freertos.org/a00110.html
 
 #define configUSE_PREEMPTION                     1
 #define configUSE_PORT_OPTIMISED_TASK_SELECTION  1
 #define configUSE_IDLE_HOOK                      0
 #define configUSE_TICK_HOOK                      0
-#define configCPU_CLOCK_HZ                       ( system_core_clock_hz )
-#define configSYSTICK_CLOCK_HZ                   ( systick_clock_hz )
+#define configCPU_CLOCK_HZ                       ( SYSTEM_CORE_CLOCK_HZ )
+#define configSYSTICK_CLOCK_HZ                   ( SYSTICK_CLOCK_HZ )
 #define configTICK_RATE_HZ                       ( ( TickType_t ) 1000 )
 #define configMAX_PRIORITIES                     5
 #define configCHECK_FOR_STACK_OVERFLOW           1    // https://www.freertos.org/Stacks-and-stack-overflow-checking.html

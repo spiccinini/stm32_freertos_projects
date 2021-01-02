@@ -5,6 +5,8 @@ set(DEVICE STM32L433)
 set(PLATFORM_ARCH STM32L4)
 add_definitions(-D${PLATFORM_ARCH})
 
+set(APP_DIR ${CMAKE_SOURCE_DIR}/apps/${APP_NAME})
+
 include(cmake/project.cmake)
 include(cmake/toolchain.cmake)
 include(cmake/freertos.cmake)

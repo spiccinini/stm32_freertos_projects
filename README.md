@@ -8,6 +8,7 @@ It provides freertos + libopencm3 + cmake
 To build the blinky app inside a build directory:
 
 ```
+git submodule update --init --recursive
 mkdir build
 cd build
 cmake -DAPP_NAME=blinky ../src/

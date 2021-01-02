@@ -12,13 +12,11 @@
 #include <libopencm3/stm32/timer.h>
 #include <libopencm3/stm32/usart.h>
 
+#include <app_config.h>
 
 #define LED_GREEN_PORT GPIOB
 #define LED_GREEN_PIN GPIO13
 #define USART_CONSOLE USART2
-
-const unsigned long system_core_clock_hz = 80000000;
-const unsigned long systick_clock_hz = system_core_clock_hz / 8;
 
 static void clock_setup(void) {
     /* FIXME - this should eventually become a clock struct helper setup */
@@ -30,16 +28,10 @@ static void clock_setup(void) {
     flash_set_ws(4);
     flash_dcache_enable();
     flash_icache_enable();
-    /* 16MHz / 4 = > 4 * 40 = 160MHz VCO => 80MHz main pll  */
 
-    // 16MHz / PPLM * PLLN / PLLR = 16 / 1 * 10 / 2 = 80 MHz
-    #define PLLM 1
-    #define PLLN 10
-    #define PLLR 2
-    #define PLLP 0
-    #define PLLQ 0
-
-    rcc_set_main_pll(RCC_PLLCFGR_PLLSRC_HSI16, PLLM, PLLN, PLLP, PLLQ, RCC_PLLCFGR_PLLR_DIV2);
+    rcc_set_main_pll(RCC_PLLCFGR_PLLSRC_HSI16, SYSTEM_PLL_PLLM, SYSTEM_PLL_PLLN, SYSTEM_PLL_PLLP,
+                         SYSTEM_PLL_PLLQ, RCC_PLLCFGR_PLLR_DIV2);
+    static_assert(SYSTEM_PLL_PLLR == 2, "RCC_PLLCFGR_PLLR_DIV2 in the line above.");
 
     rcc_osc_on(RCC_PLL);
     /* either rcc_wait_for_osc_ready() or do other things */
@@ -59,9 +51,9 @@ static void clock_setup(void) {
     rcc_set_sysclk_source(RCC_CFGR_SW_PLL); /* careful with the param here! */
     rcc_wait_for_sysclk_status(RCC_PLL);
     /* FIXME - eventually handled internally */
-    rcc_ahb_frequency = 80e6;
-    rcc_apb1_frequency = 80e6;
-    rcc_apb2_frequency = 80e6;
+    rcc_ahb_frequency = SYSTEM_CORE_CLOCK_HZ;
+    rcc_apb1_frequency = SYSTEM_CORE_CLOCK_HZ;
+    rcc_apb2_frequency = SYSTEM_CORE_CLOCK_HZ;
 }
 
 static void usart2_setup(void) {
