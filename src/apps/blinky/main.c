@@ -2,8 +2,8 @@
 #include <FreeRTOS.h>
 #include <task.h>
 
-
 #include <libopencm3/cm3/nvic.h>
+#include <libopencm3/cm3/scb.h>
 #include <libopencm3/cm3/systick.h>
 #include <libopencm3/stm32/exti.h>
 #include <libopencm3/stm32/flash.h>
@@ -28,6 +28,8 @@ static void clock_setup(void) {
     flash_set_ws(4);
     flash_dcache_enable();
     flash_icache_enable();
+
+    scb_set_priority_grouping(SCB_AIRCR_PRIGROUP_GROUP16_NOSUB);
 
     rcc_set_main_pll(RCC_PLLCFGR_PLLSRC_HSI16, SYSTEM_PLL_PLLM, SYSTEM_PLL_PLLN, SYSTEM_PLL_PLLP,
                          SYSTEM_PLL_PLLQ, RCC_PLLCFGR_PLLR_DIV2);
@@ -75,7 +77,11 @@ static void usart2_setup(void) {
     usart_set_parity(USART_CONSOLE, USART_PARITY_NONE);
     usart_set_flow_control(USART_CONSOLE, USART_FLOWCONTROL_NONE);
 
-    /* Finally enable the USART. */
+    // It is essential that interrupt handlers that make use of the FreeRTOS API have a logical
+    // priority equal to or below (with a bigger number) that set by the configMAX_SYSCALL_INTERRUPT_PRIORITY.
+    // Here we use minimal logical priority
+    nvic_set_priority(NVIC_USART2_IRQ, configKERNEL_INTERRUPT_PRIORITY);
+    nvic_enable_irq(NVIC_USART2_IRQ);
     usart_enable(USART_CONSOLE);
 }
 
@@ -105,8 +111,7 @@ int main(void) {
 
     usart2_setup();
 
-
-    xTaskCreate(task_blink, "blink", 100, NULL, configMAX_PRIORITIES - 1, NULL);
+    xTaskCreate(task_blink, "blink", 100, NULL, PRIORITY_LOW, NULL);
     vTaskStartScheduler();
 
     while (1);
