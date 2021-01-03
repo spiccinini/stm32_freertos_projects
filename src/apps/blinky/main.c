@@ -66,14 +66,14 @@ static void usart2_setup(void) {
     PA3   ------> USART2_RX
     */
     // Setup USART2 TX pin as alternate function.
-    gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO2);
-    gpio_set_af(GPIOA, GPIO_AF7, GPIO2);
+    gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO2|GPIO3);
+    gpio_set_af(GPIOA, GPIO_AF7, GPIO2|GPIO3);
     gpio_set_output_options(GPIOA, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO2);
 
     usart_set_baudrate(USART_CONSOLE, 230400);
     usart_set_databits(USART_CONSOLE, 8);
     usart_set_stopbits(USART_CONSOLE, USART_STOPBITS_1);
-    usart_set_mode(USART_CONSOLE, USART_MODE_TX);
+    usart_set_mode(USART_CONSOLE, USART_MODE_TX_RX);
     usart_set_parity(USART_CONSOLE, USART_PARITY_NONE);
     usart_set_flow_control(USART_CONSOLE, USART_FLOWCONTROL_NONE);
 
